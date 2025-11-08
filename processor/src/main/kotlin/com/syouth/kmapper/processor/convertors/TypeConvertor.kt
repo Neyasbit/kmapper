@@ -11,7 +11,8 @@ internal interface TypeConvertor {
     fun buildConversionStatement(
         fromParameterSpec: ParameterSpec?,
         from: KSType?,
-        to: KSType, targetPath: PathHolder?,
+        to: KSType,
+        targetPath: PathHolder?,
         bundle: Bundle
     ): AssignableStatement
 }

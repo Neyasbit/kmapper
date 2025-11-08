@@ -40,6 +40,5 @@ internal data class ExampleDto(
             innerMappingDomain = InnerMappingDto(0),
             listNlb = listOf(1.0f, 2.0f)
         )
-
     }
 }

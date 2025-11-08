@@ -10,17 +10,16 @@ import com.syouth.kmapper.processor.base.PathHolder
 import com.syouth.kmapper.processor.base.checkDifferentTypesNullabilitySufficient
 import com.syouth.kmapper.processor.convertors.manager.ConvertersManager
 import com.syouth.kmapper.processor.convertors.models.AssignableStatement
-import com.syouth.kmapper.processor.strategies.CheckCycleStrategy
 
 internal class UserDefinedPropertyConverter(
     private val convertersManager: ConvertersManager,
     private val targetPath: PathHolder,
     private val sourcePath: PathHolder
-    ) : TypeConvertor {
+) : TypeConvertor {
     override fun isSupported(from: KSType?, to: KSType, targetPath: PathHolder?): Boolean {
         if (targetPath == null) return false
         return this.targetPath.path.joinToString { it.elementName } == targetPath.path.joinToString { it.elementName } &&
-                checkDifferentTypesNullabilitySufficient(sourcePath.getLastElementFinalType(), to)
+            checkDifferentTypesNullabilitySufficient(sourcePath.getLastElementFinalType(), to)
     }
 
     override fun buildConversionStatement(
@@ -33,7 +32,13 @@ internal class UserDefinedPropertyConverter(
         val sourceFinalType = sourcePath.getLastElementFinalType()
         val converter = convertersManager.findConverterForTypes(sourceFinalType, to, null) ?: throw IllegalStateException("Can't find converter for $targetPath")
         val parameterSpec = ParameterSpec.builder("it", sourceFinalType.toTypeName()).build()
-        val conversionStatement = converter.buildConversionStatement(parameterSpec, sourceFinalType, to, targetPath, bundle)
+        val conversionStatement = converter.buildConversionStatement(
+            parameterSpec,
+            sourceFinalType,
+            to,
+            targetPath,
+            bundle
+        )
         return AssignableStatement(
             code = buildCodeBlock {
                 if (conversionStatement.requiresObjectToConvertFrom) {
@@ -49,7 +54,14 @@ internal class UserDefinedPropertyConverter(
     }
 
     private fun PathHolder.getLastElementFinalType(): KSType =
-        if (path.any { it.elementType.nullability != Nullability.NOT_NULL }) path.last().elementType.makeNullable() else path.last().elementType
+        if (path.any {
+                it.elementType.nullability != Nullability.NOT_NULL
+            }
+        ) {
+            path.last().elementType.makeNullable()
+        } else {
+            path.last().elementType
+        }
 
     private fun PathHolder.buildAccessStatementConsideringNullability(): String {
         val statementBuilder = StringBuilder()

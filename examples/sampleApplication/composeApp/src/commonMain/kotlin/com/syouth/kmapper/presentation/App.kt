@@ -54,7 +54,6 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlin.uuid.ExperimentalUuidApi
 
-
 @Composable
 @Preview
 internal fun App() {
@@ -68,7 +67,6 @@ internal fun App() {
         )
 
         MainScreen(viewModel = viewModel)
-
     }
 }
 
@@ -102,7 +100,6 @@ private fun MainScreen(viewModel: MainViewModel) {
                 RefreshButton(onClick = viewModel::onRefresh)
             }
         }
-
     }
 }
 
@@ -127,7 +124,6 @@ private fun LoadingView() {
 
 @Composable
 private fun SuccessView(data: Any) {
-
     AnimatedVisibility(
         visible = true,
         enter = fadeIn(animationSpec = tween(500)) + scaleIn(initialScale = 0.5f),
@@ -205,7 +201,5 @@ private fun RefreshButton(onClick: () -> Unit) {
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold
         )
-
     }
 }
-

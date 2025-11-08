@@ -26,11 +26,11 @@ internal class MapCollectionConverter(
 
     override fun isSupported(from: KSType?, to: KSType, targetPath: PathHolder?): Boolean {
         if (from == null) return false
-        return from.isSupportedMapCollectionType()
-                && to.isSupportedMapCollectionType()
-                && checkDifferentTypesNullabilitySufficient(from, to)
-                && checkMapCollectionTypeKeyArgumentsNullabilitySufficient(from, to)
-                && checkMapCollectionTypeArgumentsNullabilitySufficient(from, to)
+        return from.isSupportedMapCollectionType() &&
+            to.isSupportedMapCollectionType() &&
+            checkDifferentTypesNullabilitySufficient(from, to) &&
+            checkMapCollectionTypeKeyArgumentsNullabilitySufficient(from, to) &&
+            checkMapCollectionTypeArgumentsNullabilitySufficient(from, to)
     }
 
     override fun buildConversionStatement(
@@ -40,7 +40,11 @@ internal class MapCollectionConverter(
         targetPath: PathHolder?,
         bundle: Bundle
     ): AssignableStatement {
-        if (from == null || fromParameterSpec == null) throw IllegalStateException("from type or from object name can't be null here")
+        if (from == null || fromParameterSpec == null) {
+            throw IllegalStateException(
+                "from type or from object name can't be null here"
+            )
+        }
         checkCycleStrategy(bundle, from)
         return nodeVisitorStrategy.scoped(bundle, from) {
             AssignableStatement(
@@ -52,7 +56,9 @@ internal class MapCollectionConverter(
                         to,
                         bundle
                     )
-                    else -> throw IllegalStateException("One of or both data types not supported: ${from.declaration.simpleName} ${to.declaration.simpleName}")
+                    else -> throw IllegalStateException(
+                        "One of or both data types not supported: ${from.declaration.simpleName} ${to.declaration.simpleName}"
+                    )
                 },
                 requiresObjectToConvertFrom = true
             )
@@ -89,7 +95,10 @@ internal class MapCollectionConverter(
                 toMapCollectionArgumentType,
                 null
             ) ?: throw IllegalStateException("Unable to find converter from ${nonNullableFromMapCollectionArgumentType.toTypeName()} to ${toMapCollectionArgumentType.toTypeName()}")
-            val keyObjParameterSpec = ParameterSpec.builder("it", fromMapCollectionKeyTypeArgument.toClassName()).build()
+            val keyObjParameterSpec = ParameterSpec.builder(
+                "it",
+                fromMapCollectionKeyTypeArgument.toClassName()
+            ).build()
             val keyConversionStatement = keyConverter.buildConversionStatement(
                 keyObjParameterSpec,
                 fromMapCollectionKeyTypeArgument,
@@ -97,7 +106,10 @@ internal class MapCollectionConverter(
                 null,
                 bundle
             )
-            val valueObjParameterSpec = ParameterSpec.builder("it", nonNullableFromMapCollectionArgumentType.toClassName()).build()
+            val valueObjParameterSpec = ParameterSpec.builder(
+                "it",
+                nonNullableFromMapCollectionArgumentType.toClassName()
+            ).build()
             val valueConversionStatement = valueConvertor.buildConversionStatement(
                 valueObjParameterSpec,
                 nonNullableFromMapCollectionArgumentType,

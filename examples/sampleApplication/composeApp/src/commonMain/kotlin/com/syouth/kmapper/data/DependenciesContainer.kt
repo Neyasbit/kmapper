@@ -15,5 +15,4 @@ internal object DependenciesContainer {
     val logger: Logger = Logger.PrintLogger()
 
     val mainRepository = MainRepositoryImpl(api, mappersHolder, logger)
-
 }

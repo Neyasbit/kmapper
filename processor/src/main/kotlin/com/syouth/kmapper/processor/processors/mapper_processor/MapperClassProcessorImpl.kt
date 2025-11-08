@@ -1,7 +1,6 @@
 package com.syouth.kmapper.processor.processors.mapper_processor
 
 import com.google.devtools.ksp.processing.Dependencies
-import com.google.devtools.ksp.processing.KSPLogger
 import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.squareup.kotlinpoet.*
@@ -12,7 +11,6 @@ import com.syouth.kmapper.processor.base.data.MapperInformation
 import com.syouth.kmapper.processor.convertors.manager.ConvertersManager
 import com.syouth.kmapper.processor.injectors.providerInjector
 import com.syouth.kmapper.processor.strategies.Constatnts
-import com.syouth.kmapper.processor.strategies.VisitNodeStrategy
 import com.syouth.kmapper.processor_annotations.Mapper
 
 internal class MapperClassProcessorImpl constructor(
@@ -20,7 +18,12 @@ internal class MapperClassProcessorImpl constructor(
     private val environment: SymbolProcessorEnvironment
 ) : MapperClassProcessor {
     override fun process(type: KSClassDeclaration) {
-        if (type.annotations.find { it.annotationType.checkSame(Mapper::class) } == null) throw IllegalStateException("Should be annotated with @Mapper")
+        if (type.annotations.find {
+                it.annotationType.checkSame(Mapper::class)
+            } == null
+        ) {
+            throw IllegalStateException("Should be annotated with @Mapper")
+        }
         convertersManager.initializeForMapperClass(type)
         val functionDeclarations = type.findAbstractMappingFunctionDeclarations()
         val mappersToImplement = functionDeclarations.map { it.getMappingInformation() }
@@ -32,11 +35,10 @@ internal class MapperClassProcessorImpl constructor(
                 .addModifiers(injector.classModifier)
                 .addSuperinterface(type.toClassName())
 
-
         val optIns = mappersToImplement
             .flatMap {
                 it.from.type.resolve().collectRequiredOptInsDeep() +
-                        it.to.collectRequiredOptInsDeep()
+                    it.to.collectRequiredOptInsDeep()
             }
             .distinct()
 
@@ -69,7 +71,6 @@ internal class MapperClassProcessorImpl constructor(
         )
             .writer()
             .use { fileSpec.writeTo(it) }
-
     }
 
     private fun processMapper(mapperInfo: MapperInformation, builder: TypeSpec.Builder) {
@@ -97,7 +98,8 @@ internal class MapperClassProcessorImpl constructor(
             .addParameter(fromParameterSpec)
             .addParameters(
                 mapperInfo.mapperParams.subList(1, mapperInfo.mapperParams.size)
-                    .map { ParameterSpec.builder(it.name!!.asString(), it.type.toTypeName()).build() })
+                    .map { ParameterSpec.builder(it.name!!.asString(), it.type.toTypeName()).build() }
+            )
             .addModifiers(KModifier.OVERRIDE)
             .addCode("return %L", converterBlock.code)
         builder

@@ -7,6 +7,5 @@ internal data class TestDto(
 ) {
     companion object : Creator<TestDto> {
         override fun create() = TestDto(testI = 6202)
-
     }
 }

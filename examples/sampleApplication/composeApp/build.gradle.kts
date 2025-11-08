@@ -57,10 +57,8 @@ kotlin {
         binaries.executable()
     }
 
-
     sourceSets {
         val desktopMain by getting
-
 
         androidMain.dependencies {
             implementation(libs.androidx.activity.compose)
@@ -80,15 +78,14 @@ kotlin {
             implementation(libs.processor.annotations)
             implementation(libs.converters)
             // uncomment this if you want to work on processor and example project at once (no need to redeploy the project after every processor change)
-            //implementation(projects.processorAnnotations)
-            //implementation(projects.converters)
+            // implementation(projects.processorAnnotations)
+            // implementation(projects.converters)
         }
 
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutinesSwing)
         }
-
     }
 
     configureCommonMainKsp()
@@ -120,7 +117,6 @@ android {
     }
 }
 
-
 dependencies {
     debugImplementation(compose.uiTooling)
     with(libs.processor) {
@@ -147,7 +143,7 @@ fun KotlinMultiplatformExtension.configureCommonMainKsp() {
     }
 
     project.tasks.withType(KotlinCompilationTask::class.java).configureEach {
-        if(name != "kspCommonMainKotlinMetadata") {
+        if (name != "kspCommonMainKotlinMetadata") {
             dependsOn("kspCommonMainKotlinMetadata")
         }
     }
@@ -158,6 +154,3 @@ tasks.withType<KspAATask>().configureEach {
         dependsOn("kspCommonMainKotlinMetadata")
     }
 }
-
-
-

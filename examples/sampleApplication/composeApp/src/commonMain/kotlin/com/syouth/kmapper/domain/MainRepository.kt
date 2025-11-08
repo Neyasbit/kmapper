@@ -10,11 +10,9 @@ internal sealed interface Result<out T : Any> {
     data class Success<T : Any>(val data: T) : Result<T>
 
     data class Error(val error: Throwable) : Result<Nothing>
-
 }
 
 internal interface MainRepository {
 
     fun <T : Any> observeData(type: KClass<T>): Flow<Result<Any>>
-
 }

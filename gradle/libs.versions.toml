@@ -58,6 +58,7 @@ processor = { module = "io.github.s0nicyouth:processor", version.ref = "processo
 detekt-gradle = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
 detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
 detekt-rules-libraries = { module = "io.gitlab.arturbosch.detekt:detekt-rules-libraries", version.ref = "detekt" }
+detekt-compose-rules = { module = "ru.kode:detekt-rules-compose", version = "1.4.0" }
 
 [bundles]
 test = ["junit-jupiter", "mockito-core", "mockito-kotlin", "kotlin-compile-testing"]

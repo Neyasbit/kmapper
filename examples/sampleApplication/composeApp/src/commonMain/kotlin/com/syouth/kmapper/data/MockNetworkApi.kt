@@ -18,7 +18,6 @@ internal class MockNetworkApiImpl(
 ) : MockNetworkApi {
 
     override fun <T : Any> getData(dataType: KClass<T>): Flow<T> {
-
         return flow {
             delay(Random.nextLong(1000, 10000))
 
@@ -28,5 +27,4 @@ internal class MockNetworkApiImpl(
             emit(mockDataHolder.getDtoCreatorByType(dataType))
         }
     }
-
 }

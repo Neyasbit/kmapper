@@ -37,5 +37,4 @@ internal class MockDataHolder {
 
     private inline fun <reified T : Any> MutableMap<KClass<*>, Creator<*>>.registerFactories(creator: Creator<T>) =
         put(T::class, creator)
-
 }

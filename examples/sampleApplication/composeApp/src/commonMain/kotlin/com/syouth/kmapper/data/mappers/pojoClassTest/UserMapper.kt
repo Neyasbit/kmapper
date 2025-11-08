@@ -29,5 +29,3 @@ internal interface AddressEntity : CommonMapper<AddressEntity, DomainAddress>
 
 @Mapper
 internal interface Simple2AdvancedUserCommonMapper : CommonMapper<SimpleUser, AdvancedUser>
-
-

@@ -8,5 +8,7 @@ import com.syouth.kmapper.domain.models.mapTest.MapTestDomain
 import com.syouth.kmapper.processor_annotations.Mapper
 
 @Mapper
-internal interface MapTestCommonMapper : PrimitiveTypeConverters, BigDecimalTypeConverters,
+internal interface MapTestCommonMapper :
+    PrimitiveTypeConverters,
+    BigDecimalTypeConverters,
     CommonMapper<MapTestDto, MapTestDomain>

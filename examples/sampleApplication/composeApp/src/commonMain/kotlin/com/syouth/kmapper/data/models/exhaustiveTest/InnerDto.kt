@@ -11,6 +11,4 @@ internal data class InnerDto(
             return InnerDto(i = 4512, nullableI = 3431)
         }
     }
-
-
 }

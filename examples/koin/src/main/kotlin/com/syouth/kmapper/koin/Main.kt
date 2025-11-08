@@ -1,12 +1,9 @@
 package com.syouth.kmapper.koin
 
 import com.syouth.kmapper.processor_annotations.Mapper
-import org.koin.core.annotation.ComponentScan
-import org.koin.core.annotation.Module
 import org.koin.core.context.startKoin
 import org.koin.core.logger.Level
-import org.koin.ksp.generated.*
-
+import org.koin.ksp.generated.defaultModule
 
 fun main(args: Array<String>) {
     startKoin {

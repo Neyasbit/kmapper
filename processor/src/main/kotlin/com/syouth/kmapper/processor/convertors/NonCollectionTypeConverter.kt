@@ -27,10 +27,10 @@ internal class NonCollectionTypeConverter : TypeConvertor {
         targetPath: PathHolder?,
         bundle: Bundle
     ): AssignableStatement = AssignableStatement(
-            code = buildCodeBlock {
-                check(fromParameterSpec != null) { "from object name can't be null here" }
-                add("%N", fromParameterSpec)
-            },
+        code = buildCodeBlock {
+            check(fromParameterSpec != null) { "from object name can't be null here" }
+            add("%N", fromParameterSpec)
+        },
         requiresObjectToConvertFrom = true
     )
 }

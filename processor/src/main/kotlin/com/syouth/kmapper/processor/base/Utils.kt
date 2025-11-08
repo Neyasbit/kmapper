@@ -21,26 +21,30 @@ internal fun KSClassDeclaration.findAbstractMappingFunctionDeclarations() =
     getAllFunctions()
         .filter {
             it.isAbstract &&
-                    it.returnType != null &&
-                    it.returnType?.resolve()?.declaration is KSClassDeclaration &&
-                    it.parameters.getOrNull(0) != null &&
-                    it.parameters[0].type.resolve().declaration is KSClassDeclaration
+                it.returnType != null &&
+                it.returnType?.resolve()?.declaration is KSClassDeclaration &&
+                it.parameters.getOrNull(0) != null &&
+                it.parameters[0].type.resolve().declaration is KSClassDeclaration
         }
 
 internal fun KSClassDeclaration.findUserDefinedMapperMethods() =
     getAllFunctions()
         .filter {
             !it.isAbstract &&
-                    it.returnType != null &&
-                    it.returnType?.resolve()?.declaration is KSClassDeclaration &&
-                    it.parameters.getOrNull(0) != null &&
-                    it.parameters[0].type.resolve().declaration is KSClassDeclaration
+                it.returnType != null &&
+                it.returnType?.resolve()?.declaration is KSClassDeclaration &&
+                it.parameters.getOrNull(0) != null &&
+                it.parameters[0].type.resolve().declaration is KSClassDeclaration
         }
 
 internal fun KSFunctionDeclaration.getMappingInformation(): MapperInformation {
     val from = parameters[0].type.resolve()
     val to = returnType!!.resolve()
-    if (from.declaration !is KSClassDeclaration || to.declaration !is KSClassDeclaration) throw IllegalStateException("Mapping should be from class to class.")
+    if (from.declaration !is KSClassDeclaration || to.declaration !is KSClassDeclaration) {
+        throw IllegalStateException(
+            "Mapping should be from class to class."
+        )
+    }
 
     return MapperInformation(
         mapperParams = parameters,

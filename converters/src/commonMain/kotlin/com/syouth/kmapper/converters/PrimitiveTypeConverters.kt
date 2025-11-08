@@ -1,5 +1,6 @@
 package com.syouth.kmapper.converters
 
+@Suppress("TooManyFunctions")
 interface PrimitiveTypeConverters {
     fun mapIntToFloat(n: Int?): Float? = n?.toFloat()
     fun mapIntToDouble(n: Int?): Double? = n?.toDouble()

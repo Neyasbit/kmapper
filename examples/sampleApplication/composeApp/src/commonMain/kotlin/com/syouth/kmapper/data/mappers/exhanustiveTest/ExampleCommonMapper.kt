@@ -1,6 +1,5 @@
 package com.syouth.kmapper.data.mappers.exhanustiveTest
 
-
 import com.syouth.kmapper.data.mappers.CommonMapper
 import com.syouth.kmapper.data.models.exhaustiveTest.ExampleDto
 import com.syouth.kmapper.data.models.exhaustiveTest.TestDto
@@ -14,7 +13,8 @@ internal interface ExampleMapperSupport {
 }
 
 @Mapper
-internal interface ExampleCommonMapper : ExampleMapperSupport,
+internal interface ExampleCommonMapper :
+    ExampleMapperSupport,
     CommonMapper<ExampleDto, ExampleDomain> {
     @Mapping(target = "float", source = "secondTestParam")
     @Mapping(target = "innerMappingDomain.nI", source = "testParam")
@@ -31,9 +31,9 @@ internal interface ExampleCommonMapper : ExampleMapperSupport,
     fun map(v: Double): Double = v / 2.5
 
     override fun map(input: ExampleDto): ExampleDomain {
-        throw IllegalStateException("This dto - ${input::class.simpleName} " +
-                    "does not supported now")
+        throw IllegalStateException(
+            "This dto - ${input::class.simpleName} " +
+                "does not supported now"
+        )
     }
 }
-
-

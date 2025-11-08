@@ -8,7 +8,6 @@ internal data class SomeDto(
     companion object : Creator<SomeDto> {
 
         override fun create(): SomeDto = SomeDto(0)
-
     }
 }
 
@@ -18,6 +17,5 @@ internal data class BindDto(
     companion object : Creator<BindDto> {
 
         override fun create(): BindDto = BindDto("one")
-
     }
 }

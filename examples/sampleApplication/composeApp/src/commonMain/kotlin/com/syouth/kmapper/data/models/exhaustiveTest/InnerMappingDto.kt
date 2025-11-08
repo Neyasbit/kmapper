@@ -7,6 +7,5 @@ internal data class InnerMappingDto(
 ) {
     companion object : Creator<InnerMappingDto> {
         override fun create(): InnerMappingDto = InnerMappingDto(i = 5524)
-
     }
 }

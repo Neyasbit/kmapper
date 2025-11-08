@@ -6,7 +6,6 @@ import com.syouth.kmapper.data.models.Creator
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
-
 /**
  * jakarta.persistence.Entity
  */

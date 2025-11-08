@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlin.reflect.KClass
 
-
 internal class MainRepositoryImpl(
     private val networkApi: MockNetworkApi,
     private val mappersHolder: MappersHolder,
@@ -30,5 +29,4 @@ internal class MainRepositoryImpl(
             }
             .onStart { emit(Result.Loading) }
             .catch { error -> emit(Result.Error(error)) }
-
 }

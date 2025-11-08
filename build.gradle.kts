@@ -24,8 +24,8 @@ allprojects {
         configure<DetektExtension> {
             buildUponDefaultConfig = true
             val rootConfigFile =
-                rootProject.rootDir.parentFile.resolve("code-quality/detekt.yml")
-            val moduleConfigFile = projectDir.resolve("code-quality/detekt.yml")
+                rootProject.rootDir.resolve("code-quality/detekt/detekt.yml")
+            val moduleConfigFile = projectDir.resolve("code-quality/detekt/detekt.yml")
             val configFiles = mutableListOf<File>().apply {
                 add(rootConfigFile)
                 if (moduleConfigFile.exists()) {
@@ -59,7 +59,7 @@ allprojects {
         dependencies {
             add("detektPlugins", libs.detekt.formatting)
             add("detektPlugins", libs.detekt.rules.libraries)
+            add("detektPlugins", libs.detekt.compose.rules)
         }
-
     }
 }

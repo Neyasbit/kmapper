@@ -44,7 +44,6 @@ internal class MainViewModel private constructor(
             initialValue = MainViewState()
         )
 
-
     fun onRefresh() {
         current.value = mockDataHolder.randomDtoKClass
     }

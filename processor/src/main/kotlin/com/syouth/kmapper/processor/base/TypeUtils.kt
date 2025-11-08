@@ -23,7 +23,12 @@ internal fun areSameSupportedCollectionTypes(first: KSType, second: KSType): Boo
     if (first.declaration.qualifiedName?.asString() != second.declaration.qualifiedName?.asString()) return false
     if (first.declaration.qualifiedName?.asString() !in SUPPORTED_CONVERSION_INTERFACES) return false
     if (first.arguments.size != second.arguments.size) return false
-    if (!first.arguments.zip(second.arguments).all { (f, s) -> checkSameTypeWithNullabilitySufficient(f.type?.resolve(), s.type?.resolve()) }) return false
+    if (!first.arguments.zip(
+            second.arguments
+        ).all { (f, s) -> checkSameTypeWithNullabilitySufficient(f.type?.resolve(), s.type?.resolve()) }
+    ) {
+        return false
+    }
     return true
 }
 
@@ -31,8 +36,8 @@ internal fun areSameSupportedMapCollectionTypes(first: KSType, second: KSType): 
     if (first.declaration.qualifiedName?.asString() != second.declaration.qualifiedName?.asString()) return false
     if (first.declaration.qualifiedName?.asString() !in SUPPORTED_MAP_CONVERSION_INTERFACES) return false
     if (first.arguments.size != second.arguments.size) return false
-    return checkMapCollectionTypeKeyArgumentsNullabilitySufficient(first, second)
-            && checkSameTypeWithNullabilitySufficient(first.arguments.firstOrNull()?.type?.resolve(), second.arguments.firstOrNull()?.type?.resolve())
+    return checkMapCollectionTypeKeyArgumentsNullabilitySufficient(first, second) &&
+        checkSameTypeWithNullabilitySufficient(first.arguments.firstOrNull()?.type?.resolve(), second.arguments.firstOrNull()?.type?.resolve())
 }
 
 internal fun KSType.getCorrespondingConcreteTypeForSupportedCollectionType(): TypeName {
@@ -86,10 +91,10 @@ internal fun checkSameTypeWithNullabilitySufficient(from: KSType?, to: KSType?):
 
 internal fun KSType.isCollectionTypeArgumentDataClass(): Boolean =
     this.isSupportedCollectionType() &&
-            this.arguments.firstOrNull()?.type?.resolve()?.isDataClass() ?: false
+        this.arguments.firstOrNull()?.type?.resolve()?.isDataClass() ?: false
 
 internal fun KSType.extractSupportedCollectionTypeArgumentType(): KSType =
-   arguments.firstOrNull()?.type?.resolve() ?: throw IllegalStateException("Can't find collection type argument for ${this.toClassName().simpleName}")
+    arguments.firstOrNull()?.type?.resolve() ?: throw IllegalStateException("Can't find collection type argument for ${this.toClassName().simpleName}")
 
 internal fun KSType.extractSupportedMapCollectionTypeArgument(): KSType =
     arguments.getOrNull(1)?.type?.resolve() ?: throw IllegalStateException("Can't find map collection type argument for ${this.toClassName().simpleName}")

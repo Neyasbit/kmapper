@@ -26,7 +26,6 @@ import org.jetbrains.compose.resources.preloadFont
 
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalResourceApi::class)
 internal fun main() {
-
     ComposeViewport(document.body!!) {
         val emojiFont = preloadFont(Res.font.NotoColorEmoji).value
         var fontsFallbackInitialiazed by remember { mutableStateOf(false) }
@@ -37,7 +36,8 @@ internal fun main() {
         } else {
             Box(
                 modifier = Modifier.fillMaxSize().background(Color.DarkGray.copy(alpha = 0.8f))
-                    .clickable { }) {
+                    .clickable { }
+            ) {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             }
             println("Fonts are not ready yet")

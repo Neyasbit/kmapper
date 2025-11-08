@@ -9,7 +9,6 @@ import com.syouth.kmapper.processor.base.Bundle
 import com.syouth.kmapper.processor.base.PathHolder
 import com.syouth.kmapper.processor.base.checkSameTypeWithNullabilitySufficient
 import com.syouth.kmapper.processor.convertors.models.AssignableStatement
-import com.syouth.kmapper.processor.strategies.CheckCycleStrategy
 
 internal class UserDefinedMethodConverter(
     private val from: KSType,
@@ -26,7 +25,7 @@ internal class UserDefinedMethodConverter(
     override fun isSupported(from: KSType?, to: KSType, targetPath: PathHolder?): Boolean {
         if (from == null) return false
         return checkSameTypeWithNullabilitySufficient(from, this.from) &&
-                to.makeNotNullable() == this.to.makeNotNullable()
+            to.makeNotNullable() == this.to.makeNotNullable()
     }
 
     override fun buildConversionStatement(
@@ -40,7 +39,10 @@ internal class UserDefinedMethodConverter(
             if (fromParameterSpec == null) throw IllegalStateException("From object name can't be null here")
             add("%N(%N)", methodSpec, fromParameterSpec)
             if (this@UserDefinedMethodConverter.to.nullability == Nullability.NULLABLE && to.nullability == Nullability.NOT_NULL) {
-                add(" ?: throw %T(\"Can·not·assign·null·to·non·null·value\")", ClassName("kotlin", "IllegalStateException"))
+                add(
+                    " ?: throw %T(\"Can·not·assign·null·to·non·null·value\")",
+                    ClassName("kotlin", "IllegalStateException")
+                )
             }
         },
         requiresObjectToConvertFrom = true

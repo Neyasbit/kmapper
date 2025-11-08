@@ -32,20 +32,17 @@ internal class MappersHolder {
         registerMapper<MoneyDto>(MoneyTestCommonMapperImpl())
         registerMapper<UserEntity>(UserEntity2DomainCommonMapperImpl())
         registerMapper<AddressEntity>(AddressEntityImpl())
-        //registerMapper(DomainUser2EntityMapperImpl::class, DomainUser2EntityMapperImpl())
-        //registerMapper(Simple2AdvancedUserMapperImpl::class, Simple2AdvancedUserMapperImpl())
-        //registerMapper(RecursiveDataClassTestMapperImpl::class, RecursiveDataClassTestMapperImpl())
-
+        // registerMapper(DomainUser2EntityMapperImpl::class, DomainUser2EntityMapperImpl())
+        // registerMapper(Simple2AdvancedUserMapperImpl::class, Simple2AdvancedUserMapperImpl())
+        // registerMapper(RecursiveDataClassTestMapperImpl::class, RecursiveDataClassTestMapperImpl())
     }
 
     @Suppress("UNCHECKED_CAST")
-    fun <DTO : Any, DOMAIN : Any> getMapperByDtoType(dtoType: KClass<DTO>):
-            CommonMapper<DTO, DOMAIN> {
+    fun <DTO : Any, DOMAIN : Any> getMapperByDtoType(dtoType: KClass<DTO>): CommonMapper<DTO, DOMAIN> {
         return factories[dtoType] as? CommonMapper<DTO, DOMAIN>
             ?: throw IllegalStateException("No mapper found for type $dtoType")
     }
 
     private inline fun <reified T> MutableMap<KClass<*>, CommonMapper<*, *>>.registerMapper(creator: CommonMapper<T, *>) =
         put(T::class, creator)
-
 }

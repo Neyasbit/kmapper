@@ -43,7 +43,6 @@ dependencies {
     testImplementation(libs.mockito.kotlin)
     testImplementation(libs.kotlin.compile.testing)
     testRuntimeOnly(libs.junit.platform.launcher)
-
 }
 
 kotlin {
@@ -79,4 +78,3 @@ mavenPublishing {
         }
     }
 }
-

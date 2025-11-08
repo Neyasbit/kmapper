@@ -1,3 +1,5 @@
+@file:Suppress("UnstableApiUsage")
+
 import java.net.URI
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
@@ -51,3 +53,17 @@ include(
     ":examples:anvil",
     ":examples:sampleApplication:composeApp"
 )
+
+settings.gradle.projectsLoaded {
+    if (System.getenv("CI") == "true") {
+        return@projectsLoaded
+    }
+    val hookFile = File(settings.rootDir, ".git/hooks/pre-push")
+    if (!hookFile.exists()) {
+        println("🪝 Installing pre-push hook...")
+        val preCommitTasks = File(settings.rootDir, "scripts/pre-push")
+        preCommitTasks.copyTo(hookFile, overwrite = true)
+        hookFile.setExecutable(true)
+        println("✅ Pre-commit hook installed")
+    }
+}

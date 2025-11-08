@@ -1,0 +1,10 @@
+#!/bin/sh
+echo "Running detekt before push..."
+./gradlew detekt --quiet
+RESULT=$?
+if [ $RESULT -ne 0 ]; then
+  echo "❌ Code quality checks failed. Push aborted."
+  exit 1
+fi
+echo "✅ Code quality checks passed."
+exit 0

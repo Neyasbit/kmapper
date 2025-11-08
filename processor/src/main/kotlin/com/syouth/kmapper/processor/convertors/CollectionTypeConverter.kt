@@ -7,7 +7,14 @@ import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.buildCodeBlock
 import com.squareup.kotlinpoet.ksp.toClassName
 import com.squareup.kotlinpoet.ksp.toTypeName
-import com.syouth.kmapper.processor.base.*
+import com.syouth.kmapper.processor.base.Bundle
+import com.syouth.kmapper.processor.base.PathHolder
+import com.syouth.kmapper.processor.base.areSameSupportedCollectionTypes
+import com.syouth.kmapper.processor.base.checkCollectionArgumentsNullabilitySufficient
+import com.syouth.kmapper.processor.base.checkDifferentTypesNullabilitySufficient
+import com.syouth.kmapper.processor.base.extractSupportedCollectionTypeArgumentType
+import com.syouth.kmapper.processor.base.getCorrespondingConcreteTypeForSupportedCollectionType
+import com.syouth.kmapper.processor.base.isSupportedCollectionType
 import com.syouth.kmapper.processor.convertors.manager.ConvertersManager
 import com.syouth.kmapper.processor.convertors.models.AssignableStatement
 import com.syouth.kmapper.processor.strategies.CheckCycleStrategy
@@ -34,7 +41,7 @@ internal class CollectionTypeConverter(
         bundle: Bundle
     ): AssignableStatement {
         if (from == null || fromParameterSpec == null) {
-            throw IllegalStateException(
+            error(
                 "from type or from object name can't be null here"
             )
         }
@@ -42,7 +49,10 @@ internal class CollectionTypeConverter(
         return nodeVisitorStrategy.scoped(bundle, from) {
             AssignableStatement(
                 code = when {
-                    areSameSupportedCollectionTypes(from, to) -> buildCodeBlockForSameTypes(fromParameterSpec)
+                    areSameSupportedCollectionTypes(from, to) -> buildCodeBlockForSameTypes(
+                        fromParameterSpec
+                    )
+
                     from.isSupportedCollectionType() && to.isSupportedCollectionType() -> buildCodeBlockForDataClasses(
                         fromParameterSpec,
                         from,
@@ -50,8 +60,9 @@ internal class CollectionTypeConverter(
                         bundle
                     )
 
-                    else -> throw IllegalStateException(
-                        "One of or both data types not supported: ${from.declaration.simpleName} ${to.declaration.simpleName}"
+                    else -> error(
+                        "One of or both data types not supported: " +
+                            "${from.declaration.simpleName} ${to.declaration.simpleName}"
                     )
                 },
                 requiresObjectToConvertFrom = true
@@ -59,11 +70,17 @@ internal class CollectionTypeConverter(
         }
     }
 
-    private fun buildCodeBlockForSameTypes(fromParameterSpec: ParameterSpec): CodeBlock = buildCodeBlock {
-        add("%N", fromParameterSpec)
-    }
+    private fun buildCodeBlockForSameTypes(fromParameterSpec: ParameterSpec): CodeBlock =
+        buildCodeBlock {
+            add("%N", fromParameterSpec)
+        }
 
-    private fun buildCodeBlockForDataClasses(fromParameterSpec: ParameterSpec, from: KSType, to: KSType, bundle: Bundle): CodeBlock = buildCodeBlock {
+    private fun buildCodeBlockForDataClasses(
+        fromParameterSpec: ParameterSpec,
+        from: KSType,
+        to: KSType,
+        bundle: Bundle
+    ): CodeBlock = buildCodeBlock {
         val fromCollectionArgumentType = from.extractSupportedCollectionTypeArgumentType()
         val toCollectionArgumentType = to.extractSupportedCollectionTypeArgumentType()
         val resultTypeSpec = to.getCorrespondingConcreteTypeForSupportedCollectionType()
@@ -81,8 +98,16 @@ internal class CollectionTypeConverter(
                 nonNullFromCollectionArgumentType,
                 toCollectionArgumentType,
                 null
-            ) ?: throw IllegalStateException("Unable to find converter from ${nonNullFromCollectionArgumentType.toTypeName()} to ${toCollectionArgumentType.toTypeName()}")
-            val objParameterSpec = ParameterSpec.builder("it", nonNullFromCollectionArgumentType.toClassName()).build()
+            ) ?: error(
+                "Unable to find converter" +
+                    " from ${nonNullFromCollectionArgumentType.toTypeName()} " +
+                    "to ${toCollectionArgumentType.toTypeName()}"
+            )
+            val objParameterSpec = ParameterSpec
+                .builder(
+                    "it",
+                    nonNullFromCollectionArgumentType.toClassName()
+                ).build()
             val conversionStatement = convertor.buildConversionStatement(
                 objParameterSpec,
                 nonNullFromCollectionArgumentType,

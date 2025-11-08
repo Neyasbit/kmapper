@@ -7,11 +7,15 @@ import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.buildCodeBlock
 import com.squareup.kotlinpoet.ksp.toClassName
 import com.squareup.kotlinpoet.ksp.toTypeName
-import com.syouth.kmapper.processor.base.*
+import com.syouth.kmapper.processor.base.Bundle
 import com.syouth.kmapper.processor.base.PathHolder
+import com.syouth.kmapper.processor.base.areSameSupportedMapCollectionTypes
 import com.syouth.kmapper.processor.base.checkDifferentTypesNullabilitySufficient
 import com.syouth.kmapper.processor.base.checkMapCollectionTypeArgumentsNullabilitySufficient
 import com.syouth.kmapper.processor.base.checkMapCollectionTypeKeyArgumentsNullabilitySufficient
+import com.syouth.kmapper.processor.base.extractSupportedMapCollectionKeyTypeArgument
+import com.syouth.kmapper.processor.base.extractSupportedMapCollectionTypeArgument
+import com.syouth.kmapper.processor.base.getCorrespondingConcreteTypeForSupportedCollectionType
 import com.syouth.kmapper.processor.base.isSupportedMapCollectionType
 import com.syouth.kmapper.processor.convertors.manager.ConvertersManager
 import com.syouth.kmapper.processor.convertors.models.AssignableStatement
@@ -41,7 +45,7 @@ internal class MapCollectionConverter(
         bundle: Bundle
     ): AssignableStatement {
         if (from == null || fromParameterSpec == null) {
-            throw IllegalStateException(
+            error(
                 "from type or from object name can't be null here"
             )
         }
@@ -49,15 +53,21 @@ internal class MapCollectionConverter(
         return nodeVisitorStrategy.scoped(bundle, from) {
             AssignableStatement(
                 code = when {
-                    areSameSupportedMapCollectionTypes(from, to) -> buildCodeBlockForSameTypes(fromParameterSpec)
-                    from.isSupportedMapCollectionType() && to.isSupportedMapCollectionType() -> buildCodeBlockForDataClasses(
+                    areSameSupportedMapCollectionTypes(from, to) -> buildCodeBlockForSameTypes(
+                        fromParameterSpec
+                    )
+
+                    from.isSupportedMapCollectionType() &&
+                        to.isSupportedMapCollectionType() -> buildCodeBlockForDataClasses(
                         fromParameterSpec,
                         from,
                         to,
                         bundle
                     )
-                    else -> throw IllegalStateException(
-                        "One of or both data types not supported: ${from.declaration.simpleName} ${to.declaration.simpleName}"
+
+                    else -> error(
+                        "One of or both data types not supported: " +
+                            "${from.declaration.simpleName} ${to.declaration.simpleName}"
                     )
                 },
                 requiresObjectToConvertFrom = true
@@ -65,11 +75,17 @@ internal class MapCollectionConverter(
         }
     }
 
-    private fun buildCodeBlockForSameTypes(fromParameterSpec: ParameterSpec): CodeBlock = buildCodeBlock {
-        add("%N", fromParameterSpec)
-    }
+    private fun buildCodeBlockForSameTypes(fromParameterSpec: ParameterSpec): CodeBlock =
+        buildCodeBlock {
+            add("%N", fromParameterSpec)
+        }
 
-    private fun buildCodeBlockForDataClasses(fromParameterSpec: ParameterSpec, from: KSType, to: KSType, bundle: Bundle): CodeBlock = buildCodeBlock {
+    private fun buildCodeBlockForDataClasses(
+        fromParameterSpec: ParameterSpec,
+        from: KSType,
+        to: KSType,
+        bundle: Bundle
+    ): CodeBlock = buildCodeBlock {
         val fromMapCollectionArgumentType = from.extractSupportedMapCollectionTypeArgument()
         val toMapCollectionArgumentType = to.extractSupportedMapCollectionTypeArgument()
         val resultTypeSpec = to.getCorrespondingConcreteTypeForSupportedCollectionType()
@@ -88,13 +104,23 @@ internal class MapCollectionConverter(
                 fromMapCollectionKeyTypeArgument,
                 toMapCollectionKeyTypeArgument,
                 null
-            ) ?: throw IllegalStateException("Unable to find converter from ${fromMapCollectionKeyTypeArgument.toTypeName()} to ${toMapCollectionKeyTypeArgument.toTypeName()}")
-            val nonNullableFromMapCollectionArgumentType = fromMapCollectionArgumentType.makeNotNullable()
+            )
+                ?: error(
+                    "Unable to find converter " +
+                        "from ${fromMapCollectionKeyTypeArgument.toTypeName()} " +
+                        "to ${toMapCollectionKeyTypeArgument.toTypeName()}"
+                )
+            val nonNullableFromMapCollectionArgumentType =
+                fromMapCollectionArgumentType.makeNotNullable()
             val valueConvertor = convertersManager.findConverterForTypes(
                 nonNullableFromMapCollectionArgumentType,
                 toMapCollectionArgumentType,
                 null
-            ) ?: throw IllegalStateException("Unable to find converter from ${nonNullableFromMapCollectionArgumentType.toTypeName()} to ${toMapCollectionArgumentType.toTypeName()}")
+            ) ?: error(
+                "Unable to find converter" +
+                    " from ${nonNullableFromMapCollectionArgumentType.toTypeName()} " +
+                    "to ${toMapCollectionArgumentType.toTypeName()}"
+            )
             val keyObjParameterSpec = ParameterSpec.builder(
                 "it",
                 fromMapCollectionKeyTypeArgument.toClassName()

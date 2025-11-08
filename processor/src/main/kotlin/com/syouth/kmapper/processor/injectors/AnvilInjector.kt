@@ -1,13 +1,19 @@
 package com.syouth.kmapper.processor.injectors
 
-import com.squareup.kotlinpoet.*
+import com.squareup.kotlinpoet.AnnotationSpec
+import com.squareup.kotlinpoet.ClassName
+import com.squareup.kotlinpoet.FunSpec
+import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.TypeSpec
 
 internal class AnvilInjector(options: Map<String, String>) : Injector {
     private val bindingScope: ClassName = options["anvilBindingScope"]?.let {
         extractClassName(it)
     } ?: error("You have to provide anvilBindingScope")
-    private val generateAsSingletons: Boolean = options["anvilGenerateAsSingletons"]?.toBooleanStrictOrNull() ?: false
-    override val classModifier: KModifier = KModifier.PUBLIC // this is unfortunate limitation of Anvil
+    private val generateAsSingletons: Boolean =
+        options["anvilGenerateAsSingletons"]?.toBooleanStrictOrNull() ?: false
+    override val classModifier: KModifier =
+        KModifier.PUBLIC // this is unfortunate limitation of Anvil
 
     override fun processClassSpec(builder: TypeSpec.Builder) {
         builder
@@ -32,12 +38,25 @@ internal class AnvilInjector(options: Map<String, String>) : Injector {
 
     private fun extractClassName(scopeName: String): ClassName {
         val names = scopeName.split(".")
-        return ClassName(names.dropLast(1).joinToString("."), names.last())
+        return ClassName(
+            names.dropLast(1).joinToString("."),
+            names.last()
+        )
     }
 
     companion object {
-        private val contributesBindingClassName = ClassName("com.squareup.anvil.annotations", "ContributesBinding")
-        private val injectClassName = ClassName("javax.inject", "Inject")
-        private val singletonClassName = ClassName("javax.inject", "Singleton")
+        private val contributesBindingClassName =
+            ClassName(
+                "com.squareup.anvil.annotations",
+                "ContributesBinding"
+            )
+        private val injectClassName = ClassName(
+            "javax.inject",
+            "Inject"
+        )
+        private val singletonClassName = ClassName(
+            "javax.inject",
+            "Singleton"
+        )
     }
 }

@@ -40,7 +40,7 @@ internal class MappersHolder {
     @Suppress("UNCHECKED_CAST")
     fun <DTO : Any, DOMAIN : Any> getMapperByDtoType(dtoType: KClass<DTO>): CommonMapper<DTO, DOMAIN> {
         return factories[dtoType] as? CommonMapper<DTO, DOMAIN>
-            ?: throw IllegalStateException("No mapper found for type $dtoType")
+            ?: error("No mapper found for type $dtoType")
     }
 
     private inline fun <reified T> MutableMap<KClass<*>, CommonMapper<*, *>>.registerMapper(creator: CommonMapper<T, *>) =

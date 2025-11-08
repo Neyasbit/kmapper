@@ -18,7 +18,8 @@ internal class UserDefinedPropertyConverter(
 ) : TypeConvertor {
     override fun isSupported(from: KSType?, to: KSType, targetPath: PathHolder?): Boolean {
         if (targetPath == null) return false
-        return this.targetPath.path.joinToString { it.elementName } == targetPath.path.joinToString { it.elementName } &&
+        return this.targetPath.path.joinToString { it.elementName } ==
+            targetPath.path.joinToString { it.elementName } &&
             checkDifferentTypesNullabilitySufficient(sourcePath.getLastElementFinalType(), to)
     }
 
@@ -30,7 +31,9 @@ internal class UserDefinedPropertyConverter(
         bundle: Bundle
     ): AssignableStatement {
         val sourceFinalType = sourcePath.getLastElementFinalType()
-        val converter = convertersManager.findConverterForTypes(sourceFinalType, to, null) ?: throw IllegalStateException("Can't find converter for $targetPath")
+        val converter = convertersManager.findConverterForTypes(
+            sourceFinalType, to, null
+        ) ?: error("Can't find converter for $targetPath")
         val parameterSpec = ParameterSpec.builder("it", sourceFinalType.toTypeName()).build()
         val conversionStatement = converter.buildConversionStatement(
             parameterSpec,

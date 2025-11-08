@@ -3,11 +3,22 @@ package com.syouth.kmapper.processor.processors.mapper_processor
 import com.google.devtools.ksp.processing.Dependencies
 import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
 import com.google.devtools.ksp.symbol.KSClassDeclaration
-import com.squareup.kotlinpoet.*
+import com.squareup.kotlinpoet.AnnotationSpec
+import com.squareup.kotlinpoet.ClassName
+import com.squareup.kotlinpoet.FileSpec
+import com.squareup.kotlinpoet.FunSpec
+import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.ParameterSpec
+import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.ksp.toClassName
 import com.squareup.kotlinpoet.ksp.toTypeName
-import com.syouth.kmapper.processor.base.*
+import com.syouth.kmapper.processor.base.Bundle
+import com.syouth.kmapper.processor.base.PathHolder
+import com.syouth.kmapper.processor.base.checkSame
+import com.syouth.kmapper.processor.base.collectRequiredOptInsDeep
 import com.syouth.kmapper.processor.base.data.MapperInformation
+import com.syouth.kmapper.processor.base.findAbstractMappingFunctionDeclarations
+import com.syouth.kmapper.processor.base.getMappingInformation
 import com.syouth.kmapper.processor.convertors.manager.ConvertersManager
 import com.syouth.kmapper.processor.injectors.providerInjector
 import com.syouth.kmapper.processor.strategies.Constatnts
@@ -22,7 +33,7 @@ internal class MapperClassProcessorImpl constructor(
                 it.annotationType.checkSame(Mapper::class)
             } == null
         ) {
-            throw IllegalStateException("Should be annotated with @Mapper")
+            error("Should be annotated with @Mapper")
         }
         convertersManager.initializeForMapperClass(type)
         val functionDeclarations = type.findAbstractMappingFunctionDeclarations()
@@ -62,7 +73,7 @@ internal class MapperClassProcessorImpl constructor(
             .builder(packageName, fileName)
             .addType(implementationBuilder.build())
             .build()
-        val dependencyFile = type.containingFile ?: throw IllegalStateException("Mapper should be in a file")
+        val dependencyFile = type.containingFile ?: error("Mapper should be in a file")
         environment.codeGenerator.createNewFile(
             dependencies = Dependencies(true, dependencyFile),
             packageName,
@@ -79,9 +90,12 @@ internal class MapperClassProcessorImpl constructor(
         val from = mapperInfo.from.type.resolve()
         val converter =
             convertersManager.findConverterForTypes(from, mapperInfo.to, pathHolder)
-                ?: throw IllegalStateException("Don't know how to map ${mapperInfo.from.name?.asString()} to ${mapperInfo.to.toClassName()}")
+                ?: error("Don't know how to map ${mapperInfo.from.name?.asString()} to ${mapperInfo.to.toClassName()}")
         val fromParameterSpec =
-            ParameterSpec.builder(mapperInfo.from.name!!.asString(), mapperInfo.from.type.toTypeName()).build()
+            ParameterSpec.builder(
+                mapperInfo.from.name!!.asString(),
+                mapperInfo.from.type.toTypeName()
+            ).build()
         val bundle = Bundle().apply {
             this[Constatnts.VISITED_NODES_LIST] = mutableListOf<String>()
         }
@@ -98,7 +112,9 @@ internal class MapperClassProcessorImpl constructor(
             .addParameter(fromParameterSpec)
             .addParameters(
                 mapperInfo.mapperParams.subList(1, mapperInfo.mapperParams.size)
-                    .map { ParameterSpec.builder(it.name!!.asString(), it.type.toTypeName()).build() }
+                    .map {
+                        ParameterSpec.builder(it.name!!.asString(), it.type.toTypeName()).build()
+                    }
             )
             .addModifiers(KModifier.OVERRIDE)
             .addCode("return %L", converterBlock.code)

@@ -45,44 +45,73 @@ internal class PojoClassTypeConverter(
         targetPath: PathHolder?,
         bundle: Bundle
     ): AssignableStatement {
-        if (from == null) throw IllegalStateException("From can't be null here")
+        if (from == null) error("From can't be null here")
         checkCycleStrategy(bundle, from)
         return nodeVisitorStrategy.scoped(bundle, from) {
             AssignableStatement(
                 code = when {
-                    fromParameterSpec == null -> throw IllegalStateException(
+                    fromParameterSpec == null -> error(
                         "From type or object name can't be null here"
                     )
-                    from == to || from == to.makeNotNullable() -> buildCodeBlockForSameTypes(fromParameterSpec)
+
+                    from == to || from == to.makeNotNullable() -> buildCodeBlockForSameTypes(
+                        fromParameterSpec
+                    )
+
                     checkDifferentTypesNullabilitySufficient(
                         from,
                         to
-                    ) -> buildCodeBlockForDifferentTypes(fromParameterSpec, from, to, targetPath, bundle)
-                    else -> throw IllegalStateException("Can not map nullable to non nullable class")
+                    ) -> buildCodeBlockForDifferentTypes(
+                        fromParameterSpec,
+                        from,
+                        to,
+                        targetPath,
+                        bundle
+                    )
+
+                    else -> error("Can not map nullable to non nullable class")
                 },
                 requiresObjectToConvertFrom = true
             )
         }
     }
 
-    private fun buildCodeBlockForSameTypes(fromObjectName: ParameterSpec): CodeBlock = buildCodeBlock {
-        add("%N", fromObjectName)
-    }
+    private fun buildCodeBlockForSameTypes(fromObjectName: ParameterSpec): CodeBlock =
+        buildCodeBlock {
+            add("%N", fromObjectName)
+        }
 
-    private fun buildCodeBlockForDifferentTypes(fromObjectName: ParameterSpec, from: KSType, to: KSType, targetPath: PathHolder?, bundle: Bundle): CodeBlock = buildCodeBlock {
-        val mappingPropertiesWithDefaults = (to.declaration as KSClassDeclaration).buildMappingTable(
-            from.declaration as KSClassDeclaration
-        )
+    private fun buildCodeBlockForDifferentTypes(
+        fromObjectName: ParameterSpec,
+        from: KSType,
+        to: KSType,
+        targetPath: PathHolder?,
+        bundle: Bundle
+    ): CodeBlock = buildCodeBlock {
+        val mappingPropertiesWithDefaults =
+            (to.declaration as KSClassDeclaration).buildMappingTable(
+                from.declaration as KSClassDeclaration
+            )
         val conversionStatementIndexToMappingProperty = mutableMapOf<Int, MappingProperties>()
         var statementIndex = 0
         val conversionBlocks: List<AssignableStatement> = mappingPropertiesWithDefaults.mapNotNull {
-            val additionalPath = it.to.name?.let { name -> PathHolder.PathElement(name.asString(), it.to.type.resolve()) } ?: throw IllegalStateException("to property should have a name")
+            val additionalPath = it.to.name?.let { name ->
+                PathHolder
+                    .PathElement(name.asString(), it.to.type.resolve())
+            } ?: error("to property should have a name")
             targetPath?.appendPathElement(additionalPath)
             val fromType = it.from?.type?.resolve()
-            val converter = convertersManager.findConverterForTypes(fromType, it.to.type.resolve(), targetPath)
+            val converter =
+                convertersManager.findConverterForTypes(
+                    fromType,
+                    it.to.type.resolve(),
+                    targetPath
+                )
             if (converter == null && !it.to.hasDefault) {
-                throw IllegalStateException(
-                    "Do not know how to convert from ${fromObjectName.type}/$fromType to w${it.to.type.toTypeName()} with name ${it.to.name?.asString()} and member of $to and path $targetPath"
+                error(
+                    "Do not know how to convert from ${fromObjectName.type}/$fromType " +
+                        "to w${it.to.type.toTypeName()} with name ${it.to.name?.asString()} " +
+                        "and member of $to and path $targetPath"
                 ) // No converter and no default value means fail
             }
             // Skip generation for inconvertible value with default
@@ -90,8 +119,10 @@ internal class PojoClassTypeConverter(
                 targetPath?.removeLastPathElement()
                 return@mapNotNull null
             }
-            if (converter == null) throw IllegalStateException("Should not ever happen")
-            val paramSpec = ParameterSpec.builder("it", fromType?.toTypeName() ?: Unit::class.asTypeName()).build()
+            if (converter == null) error("Should not ever happen")
+            val paramSpec =
+                ParameterSpec.builder("it", fromType?.toTypeName() ?: Unit::class.asTypeName())
+                    .build()
             val conversionStatement = converter.buildConversionStatement(
                 paramSpec,
                 fromType,
@@ -114,7 +145,8 @@ internal class PojoClassTypeConverter(
         add("%T(\n", (to.declaration as KSClassDeclaration).toClassName())
         indent()
         conversionBlocks.withIndex().forEach { (index, statement) ->
-            val mappingProperty = conversionStatementIndexToMappingProperty[index] ?: throw IllegalStateException("Can't find mapping information for conversion statement")
+            val mappingProperty = conversionStatementIndexToMappingProperty[index]
+                ?: error("Can't find mapping information for conversion statement")
             if (statement.requiresObjectToConvertFrom) {
                 check(mappingProperty.from != null) { "From property is required and should not be null" }
                 beginControlFlow(

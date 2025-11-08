@@ -24,12 +24,18 @@ internal class ConvertersManagerImpl(
 
     val propertyConverters: List<UserDefinedPropertyConverter> = mapperFunctionUserDefinedConvertors
 
-    override fun findConverterForTypes(from: KSType?, to: KSType, targetPath: PathHolder?): TypeConvertor? {
+    override fun findConverterForTypes(
+        from: KSType?,
+        to: KSType,
+        targetPath: PathHolder?
+    ): TypeConvertor? {
         // First priority: Mapping annotation
-        mapperFunctionUserDefinedConvertors.find { it.isSupported(from, to, targetPath) }?.let { return it }
+        mapperFunctionUserDefinedConvertors.find { it.isSupported(from, to, targetPath) }
+            ?.let { return it }
 
         // Check if we have something in user defined functions as priority is higher
-        mapperClassUserDefinedMethods.find { it.isSupported(from, to, targetPath) }?.let { return it }
+        mapperClassUserDefinedMethods.find { it.isSupported(from, to, targetPath) }
+            ?.let { return it }
 
         // Then check built in converters
         return builtInConverters.find {
@@ -40,7 +46,10 @@ internal class ConvertersManagerImpl(
     override fun initializeForMapperClass(mapper: KSClassDeclaration) {
         mapperClassUserDefinedMethods.clear()
         mapper.findUserDefinedMapperMethods().forEach {
-            mapperClassUserDefinedMethods += UserDefinedMethodConverter(it.parameters[0].type.resolve(), it.returnType!!.resolve(), it)
+            mapperClassUserDefinedMethods += UserDefinedMethodConverter(
+                it.parameters[0].type.resolve(),
+                it.returnType!!.resolve(), it
+            )
         }
     }
 
@@ -52,18 +61,18 @@ internal class ConvertersManagerImpl(
                 convertersManager = this,
                 targetPath = buildPathHolderForType(
                     it.target,
-                    func.returnType?.resolve() ?: throw IllegalStateException("Mapper should have a return type")
+                    func.returnType?.resolve() ?: error("Mapper should have a return type")
                 ),
                 sourcePath = buildSourcePathHolderFromString(it.source, func)
             )
         }
         for (parameter in func.parameters) {
-            parameter.getAnnotationsByType(Bind::class).forEach { it ->
+            parameter.getAnnotationsByType(Bind::class).forEach { bind ->
                 val paramName =
-                    parameter.name ?: throw IllegalStateException("Parameter should have a name to be bindable")
+                    parameter.name ?: error("Parameter should have a name to be bindable")
 
                 val target = runCatching {
-                    it.to.ifEmpty { paramName.asString() }
+                    bind.to.ifEmpty { paramName.asString() }
                 }.getOrElse(onFailure = { throwable ->
                     println("wft ${throwable.message}")
                     paramName.asString()
@@ -74,7 +83,7 @@ internal class ConvertersManagerImpl(
                     convertersManager = this,
                     targetPath = buildPathHolderForType(
                         target,
-                        func.returnType?.resolve() ?: throw IllegalStateException("Mapper should have a return type")
+                        func.returnType?.resolve() ?: error("Mapper should have a return type")
                     ),
                     sourcePath = buildSourcePathHolderFromString(source, func)
                 )
@@ -91,11 +100,11 @@ internal class ConvertersManagerImpl(
                 currentType = currentType.extractSupportedCollectionTypeArgumentType()
             }
             val typeDeclaration = currentType.declaration
-            if (typeDeclaration !is KSClassDeclaration) throw IllegalStateException("Return type should be a class")
+            if (typeDeclaration !is KSClassDeclaration) error("Return type should be a class")
             val foundPropertyType = typeDeclaration
                 .getAllProperties()
                 .find { it.simpleName.asString() == element }?.type?.resolve()
-                ?: throw IllegalStateException("Target path should reference valid properties. Can't find $element from $path")
+                ?: error("Target path should reference valid properties. Can't find $element from $path")
             result.appendPathElement(PathHolder.PathElement(element, foundPropertyType))
             currentType = foundPropertyType
         }
@@ -103,16 +112,20 @@ internal class ConvertersManagerImpl(
         return result
     }
 
-    private fun buildSourcePathHolderFromString(path: String, func: KSFunctionDeclaration): PathHolder {
+    private fun buildSourcePathHolderFromString(
+        path: String,
+        func: KSFunctionDeclaration
+    ): PathHolder {
         val result = PathHolder()
         val indexOfFirstDot = path.indexOfFirst { it == '.' }
         val firstElement = if (indexOfFirstDot != -1) path.substring(0, indexOfFirstDot) else path
         val currentType = func.parameters.find { it.name?.asString() == firstElement }
-            ?: throw IllegalStateException("Target path should reference valid properties. Can't find $firstElement from $path")
+            ?: error("Target path should reference valid properties. Can't find $firstElement from $path")
         val resolvedType = currentType.type.resolve()
         result.appendPathElement(PathHolder.PathElement(firstElement, resolvedType))
         if (indexOfFirstDot != -1) {
-            val restOfPath = buildPathHolderForType(path.substring(indexOfFirstDot + 1), resolvedType)
+            val restOfPath =
+                buildPathHolderForType(path.substring(indexOfFirstDot + 1), resolvedType)
             result.appendPath(restOfPath)
         }
         return result

@@ -3,11 +3,12 @@ package com.syouth.kmapper.processor.convertors
 import com.google.devtools.ksp.symbol.KSType
 import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.buildCodeBlock
-import com.syouth.kmapper.processor.base.*
+import com.syouth.kmapper.processor.base.Bundle
 import com.syouth.kmapper.processor.base.PathHolder
 import com.syouth.kmapper.processor.base.checkSameTypeWithNullabilitySufficient
 import com.syouth.kmapper.processor.base.isDataClass
 import com.syouth.kmapper.processor.base.isSupportedCollectionType
+import com.syouth.kmapper.processor.base.isSupportedMapCollectionType
 import com.syouth.kmapper.processor.convertors.models.AssignableStatement
 
 internal class NonCollectionTypeConverter : TypeConvertor {

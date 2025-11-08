@@ -31,7 +31,7 @@ internal interface ExampleCommonMapper :
     fun map(v: Double): Double = v / 2.5
 
     override fun map(input: ExampleDto): ExampleDomain {
-        throw IllegalStateException(
+        error(
             "This dto - ${input::class.simpleName} " +
                 "does not supported now"
         )

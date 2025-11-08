@@ -6,7 +6,11 @@ import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.syouth.kmapper.processor.base.findAnnotations
-import com.syouth.kmapper.processor.convertors.*
+import com.syouth.kmapper.processor.convertors.CollectionTypeConverter
+import com.syouth.kmapper.processor.convertors.MapCollectionConverter
+import com.syouth.kmapper.processor.convertors.NonCollectionTypeConverter
+import com.syouth.kmapper.processor.convertors.PojoClassTypeConverter
+import com.syouth.kmapper.processor.convertors.TypeConvertor
 import com.syouth.kmapper.processor.convertors.manager.ConvertersManagerImpl
 import com.syouth.kmapper.processor.processors.mapper_processor.MapperClassProcessorImpl
 import com.syouth.kmapper.processor.strategies.CheckCycleStrategy
@@ -23,9 +27,27 @@ internal class KMapperProcessor(
         val builtInConverters = mutableListOf<TypeConvertor>()
         val convertersManager = ConvertersManagerImpl(builtInConverters)
         builtInConverters.add(NonCollectionTypeConverter())
-        builtInConverters.add(PojoClassTypeConverter(convertersManager, checkCycleStrategy, visitNodeStrategy))
-        builtInConverters.add(CollectionTypeConverter(convertersManager, checkCycleStrategy, visitNodeStrategy))
-        builtInConverters.add(MapCollectionConverter(convertersManager, checkCycleStrategy, visitNodeStrategy))
+        builtInConverters.add(
+            PojoClassTypeConverter(
+                convertersManager,
+                checkCycleStrategy,
+                visitNodeStrategy
+            )
+        )
+        builtInConverters.add(
+            CollectionTypeConverter(
+                convertersManager,
+                checkCycleStrategy,
+                visitNodeStrategy
+            )
+        )
+        builtInConverters.add(
+            MapCollectionConverter(
+                convertersManager,
+                checkCycleStrategy,
+                visitNodeStrategy
+            )
+        )
 
         val mapperClassProcessor = MapperClassProcessorImpl(
             convertersManager,

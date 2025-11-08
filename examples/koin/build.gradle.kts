@@ -17,6 +17,7 @@ application {
 ksp {
     arg("injector", "koin")
     arg("koinInjectionType", "single")
+    arg("KOIN_DEFAULT_MODULE","true")
 }
 
 dependencies {

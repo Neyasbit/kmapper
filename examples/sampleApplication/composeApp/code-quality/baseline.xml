@@ -1,0 +1,25 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>Filename:main.kt$com.syouth.kmapper.main.kt</ID>
+    <ID>MagicNumber:App.kt$0xFF6200EE</ID>
+    <ID>MagicNumber:App.kt$0xFFF4F4F4</ID>
+    <ID>MagicNumber:App.kt$100</ID>
+    <ID>MagicNumber:App.kt$50</ID>
+    <ID>MagicNumber:App.kt$500</ID>
+    <ID>MagicNumber:ExampleCommonMapper.kt$ExampleCommonMapper$2.5</ID>
+    <ID>MagicNumber:MockNetworkApi.kt$MockNetworkApiImpl$100</ID>
+    <ID>MagicNumber:MockNetworkApi.kt$MockNetworkApiImpl$1000</ID>
+    <ID>MagicNumber:MockNetworkApi.kt$MockNetworkApiImpl$10000</ID>
+    <ID>MagicNumber:MockNetworkApi.kt$MockNetworkApiImpl$30</ID>
+    <ID>MatchingDeclarationName:Platform.android.kt$AndroidPlatform : Platform</ID>
+    <ID>MatchingDeclarationName:Platform.ios.kt$IOSPlatform : Platform</ID>
+    <ID>MatchingDeclarationName:Platform.wasmJs.kt$WasmPlatform : Platform</ID>
+    <ID>MaxLineLength:MappersHolder.kt$MappersHolder$private inline</ID>
+    <ID>MaxLineLength:build.gradle.kts$// uncomment this if you want to work on processor and example project at once (no need to redeploy the project after every processor change)</ID>
+    <ID>MaximumLineLength:MappersHolder.kt$MappersHolder$ </ID>
+    <ID>UseCheckOrError:MappersHolder.kt$MappersHolder$error("No mapper found for type $dtoType")</ID>
+    <ID>UseCheckOrError:MockNetworkApi.kt$MockNetworkApiImpl$error("Something went wrong with network request")</ID>
+  </CurrentIssues>
+</SmellBaseline>

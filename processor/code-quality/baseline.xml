@@ -1,0 +1,19 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>CyclomaticComplexMethod:PojoClassTypeConverter.kt$PojoClassTypeConverter$private fun buildCodeBlockForDifferentTypes( fromObjectName: ParameterSpec, from: KSType, to: KSType, targetPath: PathHolder?, bundle: Bundle ): CodeBlock</ID>
+    <ID>LongMethod:MapCollectionConverter.kt$MapCollectionConverter$private fun buildCodeBlockForDataClasses( fromParameterSpec: ParameterSpec, from: KSType, to: KSType, bundle: Bundle ): CodeBlock</ID>
+    <ID>LongMethod:PojoClassTypeConverter.kt$PojoClassTypeConverter$private fun buildCodeBlockForDifferentTypes( fromObjectName: ParameterSpec, from: KSType, to: KSType, targetPath: PathHolder?, bundle: Bundle ): CodeBlock</ID>
+    <ID>PackageName:MapperClassProcessor.kt$package com.syouth.kmapper.processor.processors.mapper_processor</ID>
+    <ID>PackageName:MapperClassProcessorImpl.kt$package com.syouth.kmapper.processor.processors.mapper_processor</ID>
+    <ID>PackageNaming:MapperClassProcessor.kt$package com.syouth.kmapper.processor.processors.mapper_processor</ID>
+    <ID>PackageNaming:MapperClassProcessorImpl.kt$package com.syouth.kmapper.processor.processors.mapper_processor</ID>
+    <ID>ReturnCount:ConvertersManagerImpl.kt$ConvertersManagerImpl$override fun findConverterForTypes( from: KSType?, to: KSType, targetPath: PathHolder? ): TypeConvertor?</ID>
+    <ID>ReturnCount:NonCollectionTypeConverter.kt$NonCollectionTypeConverter$override fun isSupported(from: KSType?, to: KSType, targetPath: PathHolder?): Boolean</ID>
+    <ID>ReturnCount:TypeUtils.kt$internal fun areSameSupportedCollectionTypes(first: KSType, second: KSType): Boolean</ID>
+    <ID>ReturnCount:TypeUtils.kt$internal fun areSameSupportedMapCollectionTypes(first: KSType, second: KSType): Boolean</ID>
+    <ID>TooManyFunctions:TypeUtils.kt$com.syouth.kmapper.processor.base.TypeUtils.kt</ID>
+    <ID>UtilityClassWithPublicConstructor:Constatnts.kt$Constatnts</ID>
+  </CurrentIssues>
+</SmellBaseline>

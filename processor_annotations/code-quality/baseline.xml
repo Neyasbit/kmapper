@@ -1,0 +1,12 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>PackageName:Bind.kt$package com.syouth.kmapper.processor_annotations</ID>
+    <ID>PackageName:Mapper.kt$package com.syouth.kmapper.processor_annotations</ID>
+    <ID>PackageName:Mapping.kt$package com.syouth.kmapper.processor_annotations</ID>
+    <ID>PackageNaming:Bind.kt$package com.syouth.kmapper.processor_annotations</ID>
+    <ID>PackageNaming:Mapper.kt$package com.syouth.kmapper.processor_annotations</ID>
+    <ID>PackageNaming:Mapping.kt$package com.syouth.kmapper.processor_annotations</ID>
+  </CurrentIssues>
+</SmellBaseline>
